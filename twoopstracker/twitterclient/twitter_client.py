@@ -69,6 +69,7 @@ class TweetListener(tweepy.Stream):
             f"Stream listener encountered an error with status code {status_code}"
         )
         if status_code == 420:
+            # https://stackoverflow.com/a/59379416/5562041
             # returning False in on_error disconnects the stream
             return False
 
