@@ -419,6 +419,19 @@ class AccountsList(generics.RetrieveUpdateDestroyAPIView):
             instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    def patch(self, request, *args, **kwargs):
+        accounts_screen_names = [
+            {"screen_name": screen_name}
+            for screen_name in self.request.query_params.getlist("accounts[]")
+        ]
+
+        instance = self.get_object()
+        screen_names = list(instance.accounts.all().values("screen_name"))
+        if accounts_screen_names:
+            screen_names.extend(accounts_screen_names)
+        request.data["accounts"] = screen_names
+        return self.partial_update(request, *args, **kwargs)
+
     def get_serializer(self, *args, **kwargs):
         serializer_class = self.get_serializer_class()
         kwargs = update_kwargs_with_account_ids(kwargs)
